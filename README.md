@@ -19,8 +19,8 @@ A small collection of general-purpose skills for Claude Code and other agents th
 Copy the folder of the skill you want into your skills directory.
 
 ```bash
-git clone <this-repo-url>
-cp -r <this-repo>/go-deep ~/.claude/skills/
+git clone https://github.com/erandipiti/open-agent-skills.git
+cp -r open-agent-skills/go-deep ~/.claude/skills/
 ```
 
 Each skill is one folder with a `SKILL.md`. Read it before installing, as you would any prompt that runs with your permissions.
