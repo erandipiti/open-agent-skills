@@ -12,7 +12,7 @@ and what operates underneath. Based on the "hidden reality" structure, minus the
 
 - **Topic** (required). If the user gave none, ask for it in one line.
 - **Lens** (optional). A context to aim the result at: a role, a business, a company, a
-  goal ("for my AIM team", "for a solo freelancer"). With no lens, stay general. Never
+  goal ("for a small agency", "for a solo freelancer"). With no lens, stay general. Never
   assume a lens the user did not give, and never tie the topic to any company by default.
 - **Depth** (optional): `quick` (about 300 words) or `full` (default, about 800).
 
