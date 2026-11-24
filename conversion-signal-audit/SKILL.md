@@ -17,7 +17,7 @@ description: >
 
 **Created by Erandi Rodríguez.**
 
-Internal skill. It encodes two failures that both produced a confident, wrong
+This skill encodes two failures that both produced a confident, wrong
 report about tracking — one about scope, one about measurement — in a stack
 where the same conversion can leave the building through four different doors.
 
@@ -99,7 +99,7 @@ totals.
 **The failure this prevents, verbatim:** sizing a monitor's share of an event
 store by filtering both the request log and the events table to the same
 calendar day returned 63 sessions against 90. The 30% gap was a timezone
-boundary — the request log kept Phoenix time, the event store did not — and it
+boundary — the request log kept local time, the event store used UTC — and it
 would have been reported as "most monitor traffic is not reaching analytics",
 which is the opposite of the truth. Joining on the distinct id, filtering time
 once, and cross-checking against the OS breakdown all agreed at ~75%.
@@ -115,7 +115,7 @@ The report says, in this order:
    when leaving it open was the right call.
 4. **Numbers with their population and their timezone.** "1,400 events" is
    unreadable; "1,400 of 1,860 sessions (75%), events store in UTC, request log
-   in America/Phoenix" is a finding.
+   in local time" is a finding.
 
 Never write "fixed", "closed" or "no longer fires" about a signal when the
 audit covered one surface. Write which surface.
@@ -132,12 +132,3 @@ audit covered one surface. Write which surface.
 - [ ] Is there a second, independent property that agrees with the headline
       number?
 - [ ] Does the report say "on the server-side path" rather than a bare "fixed"?
-
-## Related
-
-- Cross-cutting principle 7 (verification reads back from the running system)
-  and principle 9 (a number is not evidence until its lookup and its
-  denominator are shown), in
-  `~/projects/skill-observations/cross-cutting-principles.md`.
-- Source observations: #22 (single-surface verification) and #23 (join on
-  identity), in that store's `log.md`.

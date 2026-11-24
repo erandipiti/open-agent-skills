@@ -1,0 +1,263 @@
+<title>Website and social audit: Example Co.</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;650&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap">
+<style>
+/* Default neutral stationery. To brand a report, change only the variables below (colors, fonts)
+   and the contact lines inside <footer class="band">. Layout: a cover, then list rows separated by
+   hairlines (no boxed cards), and a closing contact band. Single dark theme on purpose. */
+:root {
+  --ink: #111418;
+  --surface: #181c21;
+  --text: #eef0f2;
+  --muted: #a3acb5;
+  --rule: #2b323a;
+  --accent: #6aa6e0;
+  --accent-deep: #2f6fb0;
+  --good: #8cc79a;
+  --bad: #e27b6e;
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --sans: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+html { background: var(--ink); }
+/* The Artifact skeleton zeroes body margin at publish; the local file printed to PDF needs it too. */
+body { margin: 0; }
+body {
+  background: var(--ink); color: var(--text); font-family: var(--sans); font-size: 16.5px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+.page { max-width: 760px; margin: 0 auto; padding-block: 56px; display: grid; gap: 28px; }
+.page + .page { border-top: 1px solid var(--rule); }
+h1, h2 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.02em; line-height: 1.04; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(3rem, 9vw, 5.2rem); }
+h2 { font-size: clamp(2rem, 5vw, 2.7rem); }
+h3 { font-family: var(--sans); font-weight: 500; font-size: 1.2rem; line-height: 1.3; margin: 0; }
+em { font-style: italic; color: var(--accent); }
+p { margin: 0; max-width: 64ch; }
+.kicker { color: var(--accent); font-weight: 500; font-size: 0.95rem; }
+.muted { color: var(--muted); }
+.v { color: var(--accent); font-weight: 650; }
+
+.cover { padding-block: 72px 0; gap: 36px; }
+.cover .lede { font-size: 1.3rem; max-width: 34ch; font-family: var(--serif); line-height: 1.35; }
+.cover .meta { display: grid; gap: 4px; color: var(--muted); font-size: 0.95rem; border-top: 1px solid var(--rule); padding-top: 18px; }
+
+.band { background: var(--accent-deep); color: var(--text); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 32px max(16px, env(safe-area-inset-left, 0px)); }
+.band-in { max-width: 760px; margin: 0 auto; display: grid; gap: 6px; }
+.band .who { font-weight: 650; font-size: 1.05rem; }
+.band .ask { font-family: var(--serif); font-size: 1.45rem; line-height: 1.25; max-width: 34ch; margin-bottom: 14px; }
+.band .n { font-family: var(--serif); font-size: clamp(2.2rem, 7vw, 3.4rem); line-height: 1; letter-spacing: -0.01em; }
+
+.rows { list-style: none; padding: 0; margin: 0; }
+.rows > li { padding: 22px 0; border-top: 1px solid var(--rule); display: grid; gap: 8px; break-inside: avoid; }
+.rows > li:last-child { border-bottom: 1px solid var(--rule); }
+.rows .sub { color: var(--muted); font-size: 0.95rem; }
+.rows .meta-line { color: var(--muted); font-size: 0.85rem; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.rows .meta-line b { color: var(--text); font-weight: 500; }
+/* Screenshot beside its text block: one image cell + one text cell, so the text never stretches. */
+.with-shot { grid-template-columns: 150px minmax(0, 1fr); column-gap: 24px; align-items: start; }
+.with-shot img { width: 150px; border-radius: 6px; border: 1px solid var(--rule); display: block; }
+.with-shot .txt { display: grid; gap: 8px; align-content: start; min-width: 0; }
+@media (max-width: 560px) { .with-shot { grid-template-columns: 1fr; row-gap: 14px; } .with-shot img { width: 140px; } }
+.rows > li.group-label { font-weight: 500; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); padding: 26px 0 10px; border-top: 0; }
+
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.93rem; }
+th, td { text-align: left; padding: 12px 12px 12px 0; border-top: 1px solid var(--rule); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; font-size: 0.82rem; }
+tr { break-inside: avoid; }
+tbody tr:last-child td { border-bottom: 1px solid var(--rule); }
+.act { white-space: nowrap; font-weight: 500; }
+.act.keep { color: var(--good); }
+.act.edit { color: var(--accent); }
+.act.drop { color: var(--bad); }
+.act.add { color: var(--text); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+
+.hero-draft { border-left: 3px solid var(--accent); padding: 6px 0 6px 20px; display: grid; gap: 10px; break-inside: avoid; }
+.hero-draft .h { font-family: var(--serif); font-size: 1.9rem; line-height: 1.15; letter-spacing: -0.01em; }
+.hero-draft .cta { justify-self: start; background: var(--accent); color: var(--ink); padding: 8px 14px; border-radius: 6px; font-weight: 650; font-size: 0.95rem; }
+
+.q { padding: 24px 0; border-top: 1px solid var(--rule); display: grid; gap: 10px; break-inside: avoid; }
+.q:last-child { border-bottom: 1px solid var(--rule); }
+.q h3 { font-family: var(--serif); font-weight: 400; font-size: 1.55rem; line-height: 1.2; }
+.q .ctx { color: var(--muted); }
+.q ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
+.q li::marker { color: var(--accent); }
+
+footer.end { color: var(--muted); font-size: 0.82rem; padding-top: 8px; }
+
+@page { size: A4; margin: 0; }
+@media print {
+  body { font-size: 12pt; }
+  .page { padding-block: 18mm 0; padding-inline: 8mm; max-width: none; }
+  .page + .page { border-top: 0; }
+  /* Sections flow; only the cover, the worksheet ("Puntos por aclarar") and the closing page start
+     a new sheet. Fixed-height pages use border-box so padding cannot push the band to a new sheet. */
+  .break-hard { break-before: page; }
+  .cover { height: 296mm; box-sizing: border-box; padding-block: 34mm 0; display: flex; flex-direction: column; overflow: hidden; }
+  .cover .band { margin-top: auto; }
+  .page.break:not(.break-hard) { padding-block: 10mm 4mm; }
+  .band { margin-inline: calc(-8mm - 16px); padding-inline: calc(8mm + 16px); }
+  h2 { break-after: avoid; }
+  .last { min-height: 296mm; box-sizing: border-box; display: flex; flex-direction: column; padding-bottom: 0; }
+  .last .band { margin-top: auto; }
+}
+</style>
+
+<div class="page cover">
+  <p class="kicker">Website and social audit</p>
+  <h1>Example <em>Co.</em></h1>
+  <p class="lede">Your work is good and your social profile is active. Today the website does not let new customers reach you.</p>
+  <div class="meta">
+    <span>example.com</span>
+    <span>Reviewed on <time datetime="2026-01-15">January 15, 2026</time></span>
+    <span>We checked phone, tablet and desktop · speed · links · search listing · domain security · social profiles</span>
+  </div>
+  <footer class="band"><div class="band-in">
+    <p class="who">Prepared by Your Name · Email</p>
+    <p class="n">contact@example.com</p>
+    <p>www.example.com/services</p>
+  </div></footer>
+</div>
+
+<div class="page break break-hard">
+  <p class="kicker">What is costing you today</p>
+  <h2>Five things that cost you <em>customers</em>.</h2>
+  <ul class="rows">
+    <li class="with-shot">
+      <img src="shots/contact-360x800.jpg" alt="Contact page on a phone, with the email address visible">
+      <div class="txt">
+      <h3>The contact email sends messages to the template address</h3>
+      <p>The Contact page shows your real address, but tapping it opens an email addressed to <span class="v" data-ev="business.contact.email-mismatch.contact">mailto:info@mysite.example</span>, the builder's sample address. Anyone writing from there never reaches you.</p>
+      <p class="sub">Fix this first: it is the only visible way to contact you on a phone.</p></div>
+    </li>
+    <li class="with-shot">
+      <img src="shots/home-360x800.jpg" alt="Home page on a phone: logo, tagline, one photo and four icons">
+      <div class="txt">
+      <h3>There is no quick way to ask for a quote</h3>
+      <p>The site has <span class="v" data-ev="tech.whatsapp.site">0</span> WhatsApp links and <span class="v" data-ev="tech.tel.site">0</span> phone links. The home page has <span class="v" data-ev="business.home.wordcount.home">16</span> words and no button to reach you. The menu is four icons with no text.</p>
+      <p class="sub">Your social profile says "Info by DM". Someone arriving from a phone does not know where to go next.</p></div>
+    </li>
+    <li>
+      <h3>Template pages are published and search engines can see them</h3>
+      <p>There are <span class="v" data-ev="tech.placeholder.products.site">11</span> sample products ("Sample product", with a buy button) and pages with filler text such as <span class="v" data-ev="business.template.live.about">This is a Paragraph</span>.</p>
+      <p class="sub">Someone who lands on one of these pages from a search thinks the site is abandoned.</p>
+    </li>
+    <li>
+      <h3>The shop page contradicts itself</h3>
+      <p>One page offers <span class="v" data-ev="business.shop.offer.rental">Rent for 70</span> and another says <span class="v" data-ev="business.shop.store-empty.shop">We have no products to show right now.</span></p>
+      <p class="sub">It depends on whether the shop is still running. It is listed under open points.</p>
+    </li>
+    <li>
+      <h3>The site fell behind your social profile</h3>
+      <p>The footer says <span class="v" data-ev="business.fresh.copyright.home">&copy; 2023 by Example Co.</span> and the newest dated project is from <span class="v" data-ev="business.fresh.newest-project-year.portfolio">2020</span>. On Instagram we saw <span class="v" data-ev="business.social.ig.window">12 posts observed between 2026-01-02 and 2026-01-10</span>.</p>
+      <p class="sub">What you offer today does not appear on the site.</p>
+    </li>
+  </ul>
+</div>
+
+<div class="page break">
+  <p class="kicker">The proposal</p>
+  <h2>What we <em>would do</em>.</h2>
+  <p class="muted">In this order, from most urgent to most ambitious. Each block works on its own, so you can start with the quick ones and grow from there.</p>
+  <ul class="rows">
+    <li class="group-label">Quick · this week</li>
+    <li><h3>Fix the email link</h3><p class="sub">Make the text and the link on Contact point to your real address, and test that the form reaches you.</p><p class="meta-line"><span>Time <b>under an hour</b></span></p></li>
+    <li><h3>Fixed WhatsApp button</h3><p class="sub">With a prewritten message: "Hi, I would like a quote". Visible on every phone page.</p><p class="meta-line"><span>Time <b>under an hour</b></span></p></li>
+    <li><h3>Remove the template</h3><p class="sub">Delete sample products, test pages and the builder's default social links; replace the placeholder site name in the SEO settings.</p><p class="meta-line"><span>Time <b>half a day</b></span></p></li>
+    <li class="group-label">Foundation · this month</li>
+    <li><h3>New home page</h3><p class="sub">A short video at the top, one sentence saying what you do and for whom, and two buttons: get a quote and see projects.</p><p class="meta-line"><span>Time <b>two or three days</b></span></p></li>
+    <li><h3>Services page</h3><p class="sub">It does not exist today. List only what you actually sell.</p><p class="meta-line"><span>Time <b>one day</b></span></p></li>
+    <li><h3>Measure visits and contacts</h3><p class="sub">There is no measurement tool today (<span class="v" data-ev="tech.tracking.site">None detected</span>). Install analytics and count clicks to WhatsApp and email.</p><p class="meta-line"><span>Time <b>half a day</b></span></p></li>
+    <li class="group-label">Investment · next quarter</li>
+    <li><h3>Reorganize the site</h3><p class="sub">From more than twenty loose pages to five clear sections, with your portfolio in front.</p><p class="meta-line"><span>Time <b>one to two weeks</b></span></p></li>
+    <li><h3>Online payments</h3><p class="sub">Only if you still sell online: a page with a payment link instead of the empty shop.</p><p class="meta-line"><span>Time <b>one day</b></span><span>Depends on your answer</span></p></li>
+  </ul>
+</div>
+
+<div class="page break">
+  <p class="kicker">How it looks today and what we propose</p>
+  <h2>Site <em>map</em>.</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Current section</th><th>What to do</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Home</td><td class="act edit">Rewrite</td><td>Almost no text, no contact button, menu made of images.</td></tr>
+      <tr><td>Portfolio</td><td class="act keep">Keep</td><td>Your best index. Rename it "Projects".</td></tr>
+      <tr><td>Project A, Project B, Project C</td><td class="act keep">Keep</td><td>Real, original content. Fix typos and titles.</td></tr>
+      <tr><td>Two very short pages with the same title</td><td class="act edit">Merge</td><td>Combine into one page.</td></tr>
+      <tr><td>Photography</td><td class="act edit">Rewrite</td><td>Only has a social feed widget. Add service text and a chosen gallery.</td></tr>
+      <tr><td>About us</td><td class="act edit">Rewrite</td><td>Show the real team and past collaborations.</td></tr>
+      <tr><td>Contact</td><td class="act edit">Rewrite</td><td>Correct email link, WhatsApp and a privacy notice.</td></tr>
+      <tr><td>Empty shop, test pages</td><td class="act drop">Remove or merge</td><td>Empty store and test pages.</td></tr>
+      <tr><td>Sample products, sample team, Plans</td><td class="act drop">Remove</td><td>Published builder template.</td></tr>
+      <tr><td>Services</td><td class="act add">Add</td><td>Today nobody knows what they can hire you for.</td></tr>
+      <tr><td>Who we have worked with</td><td class="act add">Add</td><td>Clients and collaborations build trust.</td></tr>
+    </tbody>
+  </table></div>
+  <p><span class="muted">Proposed menu:</span> Services · Projects · Photography · About · Contact</p>
+  <div class="hero-draft">
+    <p class="kicker">Draft for the home page</p>
+    <p class="h">One clear sentence about what you do and who it is for.</p>
+    <p class="muted">A short paragraph with your location, your main services and the kind of customers you work with.</p>
+    <span class="cta">Get a quote on WhatsApp</span>
+    <p class="muted">Your existing tagline stays: <em>Your tagline here.</em></p>
+  </div>
+</div>
+
+<div class="page break">
+  <p class="kicker">Your social profiles</p>
+  <h2>What is visible <em>from outside</em>.</h2>
+  <p class="muted">Without logging in, the way a new customer would see them.</p>
+  <ul class="rows">
+    <li><h3>Instagram</h3><p><span class="v" data-ev="business.social.ig.followers">10K Followers</span> and <span class="v" data-ev="business.social.ig.posts">174 Posts</span>. Latest post observed: <span class="v" data-ev="business.social.ig.latest">2026-01-10</span>.</p><p class="sub">Active. It is your liveliest channel and the site does not use it.</p></li>
+    <li><h3>Facebook</h3><p><span class="v" data-ev="business.social.fb.followers">757 followers</span>. Facebook does not show post dates without logging in.</p><p class="sub">To confirm with you whether you still use it.</p></li>
+    <li><h3>YouTube</h3><p>Latest video observed: <span class="v" data-ev="business.social.yt.latest">2025-10-23</span>.</p><p class="sub">No new videos this year.</p></li>
+  </ul>
+  <p>It is too early to embed your feed on the site: first the site needs contact and services. When it is ready, a strip with recent posts will help.</p>
+</div>
+
+<div class="page break break-hard">
+  <p class="kicker">Before we meet</p>
+  <h2>Open <em>points</em>.</h2>
+  <p class="muted">There is no right answer. These are decisions only you can make, and they change what we recommend. Think them over; we will build the final proposal from them.</p>
+  <div>
+    <div class="q">
+      <h3>How do you want people to reach you?</h3>
+      <p class="ctx">Today the site offers one email that does not work, and your profile says "Info by DM". A new customer needs one clear path, and someone answering there.</p>
+      <ul><li>Who answers messages and how fast can they do it?</li><li>Do you prefer WhatsApp, a form that goes to your email, or direct messages?</li></ul>
+    </div>
+    <div class="q">
+      <h3>Is the shop still running?</h3>
+      <p class="ctx">Some pages offer products and others say there is nothing to show.</p>
+      <ul><li>If it runs: what is sold, at what price, and how often?</li><li>If not, we remove it and the site gets cleaner.</li></ul>
+    </div>
+    <div class="q">
+      <h3>What do you really want to sell?</h3>
+      <p class="ctx">Search results read <q data-lint="ok">a short phrase taken from the search listing</q> and your profile describes something different. The Services page needs a closed list.</p>
+      <ul><li>Which services bring you the most and which do you enjoy most?</li><li>Which clients or collaborations can we name with their permission?</li></ul>
+    </div>
+  </div>
+</div>
+
+<div class="page break break-hard last">
+  <p class="kicker">What we reviewed</p>
+  <h2>Scope and <em>pending items</em>.</h2>
+  <ul class="rows">
+    <li><p>Of the addresses in the site map, <span class="v" data-ev="tech.seo.sitemap.site">15 of 28</span> are template or draft pages. We checked every internal link: <span class="v" data-ev="tech.links.broken.site">0</span> broken.</p></li>
+    <li><p>On a phone, the home page takes <span class="v" data-ev="tech.lcp.home.mobile">4.9 s</span> to show the main content; on desktop, <span class="v" data-ev="tech.lcp.home.desktop">1.2 s</span>. This is a lab measurement: no real-visitor data is published for a site this size.</p></li>
+    <li><p>We did not submit the contact form. It needs to be tested together to know whether messages arrive.</p></li>
+    <li><p>We did not find a map listing for the business. If one exists, send us the link.</p></li>
+    <li><p>The domain has no email security records (<span class="v" data-ev="tech.dns.spf">No SPF</span>, <span class="v" data-ev="tech.dns.dmarc">No DMARC</span>). It does not matter today if you use a webmail address; it will if you ever use an address on your own domain.</p></li>
+  </ul>
+  <footer class="end">Every figure in this document comes from a measurement stored during the review.</footer>
+  <footer class="band"><div class="band-in">
+    <p class="ask">How much does it cost? It depends on which blocks you want. Write to us and we will send a quote per block.</p>
+    <p class="who">Your Name · WhatsApp</p>
+    <p class="n">+00 000 000 0000</p>
+    <p>www.example.com/services</p>
+  </div></footer>
+</div>

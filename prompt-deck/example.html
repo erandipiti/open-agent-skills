@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt deck</title>
+<style>
+  :root { --bg:#fbfaf8; --fg:#1d1b19; --muted:#6b665f; --line:#ddd7ce; --card:#fff; --accent:#2f5fd0; --ok:#2a7a3b; --err:#b3261e; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161513; --fg:#ece8e1; --muted:#9a948a; --line:#3a3631; --card:#1e1c1a; --accent:#8aa9ff; --ok:#6fcf86; --err:#ff8a80; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif; }
+  main { max-width:760px; margin:0 auto; padding:24px 16px 80px; }
+  h1 { font-size:1.5rem; margin:0 0 8px; }
+  .intro { color:var(--muted); margin:0 0 4px; }
+  .src { display:block; font-size:.85rem; color:var(--muted); word-break:break-all; }
+  .prog { position:sticky; top:0; background:var(--bg); padding:10px 0; border-bottom:1px solid var(--line); margin:16px 0; z-index:2; display:flex; gap:12px; align-items:center; }
+  .bar { flex:1; height:6px; background:var(--line); border-radius:3px; overflow:hidden; }
+  #progbar { height:100%; width:0; background:var(--accent); transition:width .2s; }
+  #progcount { font-variant-numeric:tabular-nums; font-size:.9rem; color:var(--muted); }
+  section.p { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; margin:0 0 20px; }
+  h2 { font-size:1.1rem; margin:0 0 8px; display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; }
+  .n { color:var(--accent); font-variant-numeric:tabular-nums; }
+  .chain { font-size:.8rem; font-weight:400; color:var(--muted); }
+  .lead { color:var(--muted); margin:0 0 12px; }
+  .q { margin:0 0 14px; }
+  label { display:block; margin-bottom:4px; }
+  .qn { color:var(--muted); margin-right:8px; font-variant-numeric:tabular-nums; }
+  .qt { font-weight:600; }
+  .en { display:block; font-size:.82rem; color:var(--muted); font-family:ui-monospace,Menlo,monospace; }
+  .hint { display:block; font-size:.85rem; color:var(--muted); }
+  textarea { width:100%; font:inherit; color:inherit; background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:8px 10px; resize:vertical; min-height:3.2em; }
+  textarea.filled { border-color:var(--accent); }
+  textarea:focus { outline:2px solid var(--accent); outline-offset:1px; }
+  details.prompt { margin:8px 0 12px; }
+  summary { cursor:pointer; color:var(--muted); font-size:.9rem; }
+  pre { white-space:pre-wrap; word-wrap:break-word; background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:10px; font:.85rem/1.45 ui-monospace,Menlo,monospace; margin:8px 0 0; }
+  button { font:inherit; padding:8px 14px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:inherit; cursor:pointer; min-height:40px; }
+  button.copy { background:var(--accent); border-color:var(--accent); color:#fff; }
+  @media (prefers-color-scheme: dark) { button.copy { color:#101010; } }
+  .acts { display:flex; gap:8px; flex-wrap:wrap; }
+  .tools { display:flex; gap:8px; margin-top:8px; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title"></h1>
+  <p class="intro" id="intro"></p>
+  <span class="src" id="source"></span>
+  <div class="prog"><div class="bar"><div id="progbar"></div></div><span id="progcount">0 / 0</span><button id="dlall" type="button">Download all (.md)</button></div>
+  <div id="deck"></div>
+</main>
+<script>
+// DECK is the only part an agent replaces. Everything below it is the engine.
+//
+// prompts[].head : prompt text up to and including the line that introduces the context
+//                  (or the role sentence when the prompt has no such structure).
+// prompts[].ctx  : [{id, q, en, slot, hint}]. `en` is the literal line exported into the prompt
+//                  (source language). `q` is the question shown to the user. `slot` is the original
+//                  [PLACEHOLDER], kept in the export when the field is empty. Use ctx: [] for a
+//                  prompt with no slots.
+// prompts[].tail : everything after the data (output format, etc.).
+// Assembly: head + "\n" + (en + " " + (answer || slot) per line) + "\n" + tail.
+const DECK = {
+  form: "example",
+  title: "Example deck: plan and review",
+  source: "https://example.com/original-carousel",
+  intro: "Two sample prompts. The first has two slots, the second has none and interviews the user.",
+  prompts: [
+    { n: 1, title: "Plan a launch", chain: "", lead: "Fill both fields, then copy.",
+      head: "Act as a product marketer.\n\n# CONTEXT:",
+      ctx: [
+        { id: "p1c1", q: "What are you launching?", en: "Product:", slot: "[PRODUCT]", hint: "One sentence, no slogans" },
+        { id: "p1c2", q: "Who is it for?", en: "Audience:", slot: "[AUDIENCE]", hint: "A real group, not everyone" }
+      ],
+      tail: "# OUTPUT FORMAT:\nA 5-step plan." },
+    { n: 2, title: "Review my answers", chain: "Uses the output of prompt 1", lead: "This prompt has no slots: the model asks the questions.",
+      head: "Ask me questions, one at a time, until you can critique the plan above.",
+      ctx: [],
+      tail: "Then give me three risks." }
+  ]
+};
+
+(function renderDeck(DECK) {
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var KEY = "prompt-deck:" + DECK.form;
+  var answers = {};
+  var ALL = DECK.prompts.reduce(function (a, p) { return a.concat(p.ctx); }, []);
+
+  document.title = DECK.title;
+  $("title").textContent = DECK.title;
+  $("intro").textContent = DECK.intro || "";
+  $("source").textContent = DECK.source || "";
+
+  // Storage can throw (private windows, blocked site data). The page must work without it.
+  function load() { try { return JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { return {}; } }
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify(answers)); } catch (e) { /* ignore */ } }
+
+  var root = $("deck");
+  DECK.prompts.forEach(function (p) {
+    var sec = document.createElement("section");
+    sec.className = "p";
+    var qs = p.ctx.map(function (c, i) {
+      return '<div class="q"><label for="' + esc(c.id) + '"><span class="qn">' + String(i + 1).padStart(2, "0") + '</span><span class="qt">' + esc(c.q) + '</span>' +
+        '<span class="en">' + esc(c.en) + '</span>' + (c.hint ? '<span class="hint">' + esc(c.hint) + '</span>' : "") + '</label>' +
+        '<textarea id="' + esc(c.id) + '" data-qid="' + esc(c.id) + '" rows="3" placeholder="..."></textarea></div>';
+    }).join("");
+    sec.innerHTML = '<h2><span class="n">' + String(p.n).padStart(2, "0") + '</span>' + esc(p.title) +
+      (p.chain ? '<span class="chain">' + esc(p.chain) + '</span>' : "") + '</h2>' +
+      (p.lead ? '<p class="lead">' + esc(p.lead) + '</p>' : "") + qs +
+      '<details class="prompt" open><summary>Prompt that will be copied</summary><pre id="pv-' + p.n + '"></pre></details>' +
+      '<div class="acts"><button class="copy" type="button" data-p="' + p.n + '">Copy prompt ' + p.n + '</button>' +
+      '<button class="dl" type="button" data-p="' + p.n + '">Download .md</button></div>';
+    root.appendChild(sec);
+  });
+
+  // Unfilled slots stay as their original [PLACEHOLDER] so a half-filled export looks half-filled.
+  function build(p) {
+    var lines = p.ctx.map(function (c) {
+      var a = (answers[c.id] || "").trim();
+      return c.en + " " + (a || c.slot || "[DESCRIBE]") + "\n";
+    }).join("");
+    return p.head + "\n" + lines + "\n" + p.tail + "\n";
+  }
+  function buildAll() {
+    var bar = new Array(71).join("=");
+    return DECK.prompts.map(function (p) { return bar + "\n" + p.n + ". " + p.title.toUpperCase() + "\n" + bar + "\n\n" + build(p); }).join("\n\n");
+  }
+  function download(text, name) {
+    var url = URL.createObjectURL(new Blob([text], { type: "text/markdown;charset=utf-8" }));
+    var a = document.createElement("a");
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+  function copy(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+    return new Promise(function (res, rej) {
+      var t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select();
+      try { document.execCommand("copy") ? res() : rej(); } catch (e) { rej(e); } t.remove();
+    });
+  }
+  var today = function () { return new Date().toISOString().slice(0, 10); };
+
+  function refresh() {
+    var done = ALL.filter(function (c) { return (answers[c.id] || "").trim().length > 0; }).length;
+    $("progcount").textContent = done + " / " + ALL.length;
+    $("progbar").style.width = (ALL.length ? done / ALL.length * 100 : 0) + "%";
+    DECK.prompts.forEach(function (p) { $("pv-" + p.n).textContent = build(p); });
+  }
+  function grow(t) { t.style.height = "auto"; t.style.height = (t.scrollHeight + 2) + "px"; }
+
+  document.querySelectorAll("textarea[data-qid]").forEach(function (t) {
+    t.addEventListener("input", function () {
+      answers[t.dataset.qid] = t.value;
+      t.classList.toggle("filled", t.value.trim().length > 0);
+      grow(t); persist(); refresh();
+    });
+  });
+  document.addEventListener("click", function (ev) {
+    var b = ev.target.closest("button[data-p]");
+    if (!b) return;
+    var p = DECK.prompts.filter(function (x) { return String(x.n) === b.dataset.p; })[0];
+    if (!p) return;
+    if (b.classList.contains("copy")) {
+      var was = b.textContent;
+      copy(build(p)).then(function () { b.textContent = "Copied"; }, function () { b.textContent = "Copy failed"; })
+        .then(function () { setTimeout(function () { b.textContent = was; }, 1600); });
+    } else download(build(p), DECK.form + "-" + p.n + "-" + today() + ".md");
+  });
+  $("dlall").addEventListener("click", function () { download(buildAll(), DECK.form + "-deck-" + today() + ".md"); });
+
+  var saved = load();
+  Object.keys(saved).forEach(function (id) {
+    var t = $(id);
+    if (t && typeof saved[id] === "string") { t.value = saved[id]; answers[id] = saved[id]; t.classList.toggle("filled", saved[id].trim().length > 0); grow(t); }
+  });
+  refresh();
+})(DECK);
+</script>
+</body>
+</html>

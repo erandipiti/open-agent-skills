@@ -1,0 +1,10 @@
+{
+  "name": "chingonizar-scripts",
+  "private": true,
+  "description": "Pinned tool dependencies for the chingonizar website-audit skill.",
+  "type": "module",
+  "dependencies": {
+    "lighthouse": "13.6.0",
+    "puppeteer-core": "25.16.0"
+  }
+}
