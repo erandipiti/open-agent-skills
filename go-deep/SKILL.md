@@ -45,16 +45,7 @@ and what operates underneath. Based on the "hidden reality" structure, minus the
 - **Stay on the topic.** Do not widen into adjacent subjects to look deeper.
 - **Match the user's language.** Spanish in, Spanish out.
 
-## Optional AIM lens
+## Optional context lens
 
-Only when the user asks for it ("lente AIM", "for AIM"). Then add a final section **Para
-AIM** with these limits:
-
-- AIM is B2B (recruits and supports advisors). Annuity Gator is B2C (consumers). If the
-  brand is unclear, ask which one.
-- Advisors are not FMOs. Do not mix the terms.
-- Use no advisor production numbers beyond the ones in the AIM Messaging skill.
-- No "guaranteed" promises. Consumer-facing copy derived from this needs a compliance check.
-- Client information (SSN, birth dates, addresses, bank data) never goes in the prompt.
-
-Without that request, the skill has no AIM content at all.
+If the user supplies a lens (a company, role or policy), add a final section **Para <lens>**
+and follow any constraints the user states for it. Without a lens, add nothing.
