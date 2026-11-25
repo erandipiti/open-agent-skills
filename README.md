@@ -13,6 +13,7 @@ A small collection of general-purpose skills for Claude Code and other agents th
 | [`chingonizar`](chingonizar/SKILL.md) | Website and social audit from one URL. Scripts collect facts (speed, links, headers, rendered pages, public social evidence), agents judge them, and the report may only state numbers backed by an evidence ledger. | You audit a small business site and want a client-ready report that never claims what it did not measure. Needs Node, Chromium and a few CLI tools (see its README). |
 | [`prompt-deck`](prompt-deck/SKILL.md) | Turns a prompt framework (a carousel or post full of `[PLACEHOLDER]` prompts) into one self-contained HTML page: fill the slots, see the assembled prompt, copy it. Works offline. | You found a prompt pack and want to use it as a fillable form instead of editing text by hand. |
 | [`finding-note`](finding-note/SKILL.md) | Evaluates something you found (tool, tip, stat, process) and writes a note with a verdict: claims checked separately from the post's claims, judged against your own goals. | Someone shares a "you need to try this" post and you want to know if it is worth your time. |
+| [`idiot-proof-sop`](idiot-proof-sop/SKILL.md) | Rewrites drafts, transcripts and messy process notes into SOPs that follow aviation documentation rules (ASD-STE100, S1000D, QRH): condition before action, one action per step, alerts before the risky step, no synonyms, and `[MISSING DATA]` instead of guessing. | People will follow a procedure step by step and you need it impossible to misread. |
 
 ## Install
 
